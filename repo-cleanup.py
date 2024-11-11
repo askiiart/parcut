@@ -10,16 +10,31 @@ def cli():
 
 
 @cli.command('run')
-@click.option('--dry-run', is_flag=True, default=False, help="Do a dry run")
-@click.option('--only-delete', is_flag=True, default=False, help="Only delete files, don't run repo-remove and repo-add on their old and new versions (default: false)")
-@click.option('--delete-debug', is_flag=True, default=False, help="Delete debug symbol packages (default: false)")
+@click.option('--dry-run', is_flag=True, default=False, help='Do a dry run')
+@click.option(
+    '--only-delete',
+    is_flag=True,
+    default=False,
+    help="Only delete files, don't run repo-remove and repo-add on their old and new versions (default: false)"
+)
+@click.option(
+    '--delete-debug',
+    is_flag=True,
+    default=False,
+    help='Delete debug symbol packages (default: false)'
+)
 @click.argument('repo_path')
 def run(repo_path, dry_run=False, only_delete=False, delete_debug=False):
     get_old_packages_runner(repo_path)
 
 
 @cli.command('list-old-packages')
-@click.option('--list-debug', required=False, default=True, help="List debug symbol packages (default: true)")
+@click.option(
+    '--list-debug',
+    required=False,
+    default=True,
+    help='List debug symbol packages (default: true)'
+)
 @click.argument('repo_path')
 def get_old_packages_runner(repo_path, list_debug=True):
     '''
@@ -36,8 +51,7 @@ def get_old_packages(repo_path, list_debug=True):
         no_debug = []
         for item in pkg_map[pkg_name]:
             # does nothing, but something needs to go here otherwise the linter complains about syntax; it needs the else for some reason
-            no_debug.append(item) if not item.startswith(
-                f'{pkg_name}-debug') else False
+            no_debug.append(item) if not item.startswith(f'{pkg_name}-debug') else False
 
         # skip in case there isn't an old version
         if len(no_debug) == 1:
@@ -46,15 +60,22 @@ def get_old_packages(repo_path, list_debug=True):
         old_no_debug = natsorted(no_debug)[:1]
         old_packages.extend(old_no_debug)
         for item in old_no_debug:
-            if list_debug and item.replace(pkg_name, f'{pkg_name}-debug') in pkg_map[pkg_name]:
-                old_packages.append(item.replace(
-                    pkg_name, f'{pkg_name}-debug'))
+            if (
+                list_debug
+                and item.replace(pkg_name, f'{pkg_name}-debug') in pkg_map[pkg_name]
+            ):
+                old_packages.append(item.replace(pkg_name, f'{pkg_name}-debug'))
 
     return natsorted(old_packages)
 
 
 @cli.command('list-new-packages')
-@click.option('--list-debug', required=False, default=True, help="List debug symbol packages (default: true)")
+@click.option(
+    '--list-debug',
+    required=False,
+    default=True,
+    help='List debug symbol packages (default: true)'
+)
 @click.argument('repo_path')
 def get_new_packages_runner(repo_path, list_debug=True):
     for item in get_new_packages(repo_path, list_debug):
@@ -73,23 +94,27 @@ def get_new_packages(repo_path, list_debug=True):
         no_debug = []
         for item in pkg_map[pkg_name]:
             # does nothing, but something needs to go here otherwise the linter complains about syntax; it needs the else for some reason
-            no_debug.append(item) if not item.startswith(
-                f'{pkg_name}-debug') else False
+            no_debug.append(item) if not item.startswith(f'{pkg_name}-debug') else False
 
         # add all in case there isn't an old version
         if len(no_debug) == 1:
             new_packages.append(no_debug[0])
-            if list_debug and no_debug[0].replace(pkg_name, f'{pkg_name}-debug') in pkg_map[pkg_name]:
-                new_packages.append(no_debug[0].replace(
-                    pkg_name, f'{pkg_name}-debug'))
+            if (
+                list_debug
+                and no_debug[0].replace(pkg_name, f'{pkg_name}-debug')
+                in pkg_map[pkg_name]
+            ):
+                new_packages.append(no_debug[0].replace(pkg_name, f'{pkg_name}-debug'))
             continue
 
         new_no_debug = natsorted(no_debug)[1:]
         new_packages.extend(new_no_debug)
         for item in new_no_debug:
-            if list_debug and item.replace(pkg_name, f'{pkg_name}-debug') in pkg_map[pkg_name]:
-                new_packages.append(item.replace(
-                    pkg_name, f'{pkg_name}-debug'))
+            if (
+                list_debug
+                and item.replace(pkg_name, f'{pkg_name}-debug') in pkg_map[pkg_name]
+            ):
+                new_packages.append(item.replace(pkg_name, f'{pkg_name}-debug'))
 
     return natsorted(new_packages)
 
@@ -115,15 +140,15 @@ class HelperFunctions:
 
         package_names = []
         for item in files:
-            package_name = item[:item.rfind('-')]
-            package_name = package_name[:package_name.rfind('-')]
-            package_name = package_name[:package_name.rfind('-')]
+            package_name = item[: item.rfind('-')]
+            package_name = package_name[: package_name.rfind('-')]
+            package_name = package_name[: package_name.rfind('-')]
             package_names.append(package_name)
 
         for item in files:
-            package_name = item[:item.rfind('-')]
-            package_name = package_name[:package_name.rfind('-')]
-            package_name = package_name[:package_name.rfind('-')]
+            package_name = item[: item.rfind('-')]
+            package_name = package_name[: package_name.rfind('-')]
+            package_name = package_name[: package_name.rfind('-')]
 
             # can't just do endswith(), since normal packages can also end in `-debug`, like `dosbox-debug` in the AUR
             # and if it still fails, that's a conflicting package failure, not an issue with the program
@@ -143,22 +168,20 @@ class HelperFunctions:
 
     def get_repo_name(repo_path):
         repo_name = glob.glob(f'{repo_path}/*.db')[0]
-        repo_name = repo_name[repo_name.rfind('/')+1:]
-        repo_name = repo_name[:repo_name.find('.')]
-        return (repo_name)
+        repo_name = repo_name[repo_name.rfind('/') + 1 :]
+        repo_name = repo_name[: repo_name.find('.')]
+        return repo_name
 
     def get_package_list(repo_path):
         '''
         Lists all packages in repo_path, excluding the repo files (.db, .files)
         '''
         files = glob.glob(f'{repo_path}/*.tar.zst')
-        files = [f[f.rfind('/')+1:] for f in files]
+        files = [f[f.rfind('/') + 1 :] for f in files]
         repo_name = HelperFunctions.get_repo_name(repo_path)
 
-        files.remove(
-            f'{repo_name}.db.tar.zst')
-        files.remove(
-            f'{repo_name}.files.tar.zst')
+        files.remove(f'{repo_name}.db.tar.zst')
+        files.remove(f'{repo_name}.files.tar.zst')
 
         return natsorted(files)
 
@@ -168,43 +191,42 @@ if __name__ == '__main__':
 
 
 class colors:
-    reset = '\033[0m'
-    bold = '\033[01m'
-    disable = '\033[02m'
-    underline = '\033[04m'
-    reverse = '\033[07m'
-    strikethrough = '\033[09m'
-    invisible = '\033[08m'
+    reset = '\x1b[0m'
+    bold = '\x1b[01m'
+    disable = '\x1b[02m'
+    underline = '\x1b[04m'
+    reverse = '\x1b[07m'
+    strikethrough = '\x1b[09m'
+    invisible = '\x1b[08m'
 
     class fg:
-        black = '\033[30m'
-        red = '\033[31m'
-        green = '\033[32m'
-        orange = '\033[33m'
-        blue = '\033[34m'
-        purple = '\033[35m'
-        cyan = '\033[36m'
-        lightgrey = '\033[37m'
-        darkgrey = '\033[90m'
-        lightred = '\033[91m'
-        lightgreen = '\033[92m'
-        yellow = '\033[93m'
-        lightblue = '\033[94m'
-        pink = '\033[95m'
-        lightcyan = '\033[96m'
+        black = '\x1b[30m'
+        red = '\x1b[31m'
+        green = '\x1b[32m'
+        orange = '\x1b[33m'
+        blue = '\x1b[34m'
+        purple = '\x1b[35m'
+        cyan = '\x1b[36m'
+        lightgrey = '\x1b[37m'
+        darkgrey = '\x1b[90m'
+        lightred = '\x1b[91m'
+        lightgreen = '\x1b[92m'
+        yellow = '\x1b[93m'
+        lightblue = '\x1b[94m'
+        pink = '\x1b[95m'
+        lightcyan = '\x1b[96m'
 
-        rainbow = [lightred, orange, yellow,
-                   lightgreen, lightcyan, blue, purple]
+        rainbow = [lightred, orange, yellow, lightgreen, lightcyan, blue, purple]
 
     class bg:
-        black = '\033[40m'
-        red = '\033[41m'
-        green = '\033[42m'
-        orange = '\033[43m'
-        blue = '\033[44m'
-        purple = '\033[45m'
-        cyan = '\033[46m'
-        lightgrey = '\033[47m'
+        black = '\x1b[40m'
+        red = '\x1b[41m'
+        green = '\x1b[42m'
+        orange = '\x1b[43m'
+        blue = '\x1b[44m'
+        purple = '\x1b[45m'
+        cyan = '\x1b[46m'
+        lightgrey = '\x1b[47m'
 
 
 fg = colors.fg()
