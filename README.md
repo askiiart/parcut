@@ -1,4 +1,6 @@
-# Pacman Repo Cleanup
+# Parcut
+
+**Pacman Repo Cleanup Tool**
 
 A script to clean up pacman repos. This is primarily used for removing old versions of packages and adding new ones, but it has options to print old and new packages line-by-line so they can be parsed by other programs.
 
