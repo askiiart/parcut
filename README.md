@@ -16,7 +16,6 @@ list-old-packages
 ├── --list-debug
 └── repo_path*
 run
-├── --delete-debug
 ├── --dry-run
 ├── --only-delete
 └── repo_path*
@@ -45,11 +44,25 @@ Arguments:
 - `--dry-run`: Do a dry run
 - `--only-delete`: Only delete files, don't modify the repo files from them (default: false)
   - Without this argument, parcut will try to remove and add the relevant packages using `repo-add` and `repo-remove`, meaning it optionally depends on those programs.
-    - <small>These are needed to run the repo anyways, so you *should* have them installed already.</small>
-- `--delete-debug`: Delete debug symbol packages (default: true)
+    - <small>As long as you're on Arch, this will be installed, as it's part of pacman. Plus, if you're running a repo, you need these anyways.</small>
+
+## Exit codes
+
+- `0`: Completed successfully
+- `10`: Failed to remove old package from repo - probably missing write perms on the database.
+- `11`: Permission denied when trying to delete a package - missing write perms on the package.
+- `12`: Failed to add new package to repo - again, probably missing write perms on the database.
 
 ## Notes and credits
 
 This was inspired by [guydunigo/remove_old_arch_pkgs](https://github.com/guydunigo/remove_old_arch_pkgs), which I used at first, but ran into some bugs with.
 
-I also ~~stole~~ borrowed a bit of code from [blend-os/blend](https://github.com/blend-os/blend) for coloring the terminal.
+I also ~~stole~~ borrowed and modified a bit of code from [blend-os/blend](https://github.com/blend-os/blend) for coloring the terminal.
+
+## Notes and limitations
+
+This requires a repo db file to already exist; if the repo doesn't already exist, you can just create an empty file like this instead: `touch reponame.db`
+
+### Development
+
+This uses `unittest` for testing; tests can be run by running `python3 -m unittest`. Running `test.py` normally will generate data to test the program, which is also generated automatically at the start of every test.
