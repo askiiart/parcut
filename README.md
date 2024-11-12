@@ -4,6 +4,8 @@
 
 A script to clean up pacman repos. This is primarily used for removing old versions of packages and adding new ones, but it has options to print old and new packages line-by-line so they can be parsed by other programs.
 
+![A screenshot of Parcut running on my repo](/readme-assets/screenshot.png)
+
 ## Usage
 
 First off, this depends on `natsort` and `click`, which you can install with `pip`.
@@ -37,19 +39,18 @@ Lists old versions of packages.
 
 ### `run`
 
-Processes it all, runs `repo-remove` and deletes old packages, then runs `repo-add` on new packages.
+Processes it all, deletes old packages, then runs `repo-add` on new packages.
 
 Arguments:
 
 - `--dry-run`: Do a dry run
 - `--only-delete`: Only delete files, don't modify the repo files from them (default: false)
-  - Without this argument, parcut will try to remove and add the relevant packages using `repo-add` and `repo-remove`, meaning it optionally depends on those programs.
-    - <small>As long as you're on Arch, this will be installed, as it's part of pacman. Plus, if you're running a repo, you need these anyways.</small>
+  - Without this argument, parcut will try to add the newest packages using `repo-add`, meaning it optionally depends on those programs.
+    - <small>As long as you're on Arch, this will be installed, as it's part of pacman. Plus, if you're running a repo, you need this anyways.</small>
 
 ## Exit codes
 
 - `0`: Completed successfully
-- `10`: Failed to remove old package from repo - probably missing write perms on the database.
 - `11`: Permission denied when trying to delete a package - missing write perms on the package.
 - `12`: Failed to add new package to repo - again, probably missing write perms on the database.
 

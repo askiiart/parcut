@@ -18,7 +18,7 @@ def cli():
     '--only-delete',
     is_flag=True,
     default=False,
-    help="Only delete files, don't run repo-remove and repo-add on their old and new versions (default: false)"
+    help="Only delete files, don't run repo-add on the new versions (default: false)"
 )
 @click.argument('repo_path')
 def run(repo_path, dry_run=False, only_delete=False):
@@ -27,44 +27,9 @@ def run(repo_path, dry_run=False, only_delete=False):
             f'{colors.bg.bright.blue}{colors.fg.black}Dry run mode enabled; no changes will be made{colors.reset}\n'
         )
     old_packages = get_old_packages(repo_path)
+    new_packages = get_new_packages(repo_path)
     repo_name = HelperFunctions.get_repo_name(repo_path)
 
-    if not only_delete:
-        print('=== Removing old packages ===')
-        for pkg in old_packages:
-            print(f'Removing {pkg}...')
-            if not dry_run:
-                output = getstatusoutput(
-                    f'repo-remove {repo_path}/{repo_name}.db.tar.zst {repo_path}/{pkg}'
-                )
-                if output[0] != 0:
-                    print(
-                        f'{colors.bg.red}[ERROR]{colors.reset} failed to remove {pkg}'
-                    )
-                    print(f'Exit code: {output[0]}')
-                    print(f'Command output:\n{output[1]}')
-                    exit(10)
-
-        print(
-            f'{colors.fg.green}✅ Successfully removed old packages from repo{colors.reset}'
-        )
-        print()
-
-    print('=== Deleting old packages ===')
-    for pkg in old_packages:
-        print(f'Deleting {pkg}...')
-        if not dry_run:
-            try:
-                remove(f'{repo_path}/{pkg}')
-            except Exception as e:
-                print(f'{colors.bg.red}[ERROR]{colors.reset} failed to delete {pkg}')
-                print(f'Error: {e}')
-                exit(11)
-
-    print(f'{colors.fg.green}✅ Successfully deleted packages{colors.reset}')
-    print()
-
-    new_packages = get_new_packages(repo_path)
     if not only_delete:
         print('=== Adding new packages ===')
         for pkg in new_packages:
@@ -83,7 +48,21 @@ def run(repo_path, dry_run=False, only_delete=False):
         )
         print()
 
-    print(f'✨ {colors.bg.green}Repo successfully updated{colors.reset} ✨')
+    print('=== Deleting old packages ===')
+    for pkg in old_packages:
+        print(f'Deleting {pkg}...')
+        if not dry_run:
+            try:
+                remove(f'{repo_path}/{pkg}')
+            except Exception as e:
+                print(f'{colors.bg.red}[ERROR]{colors.reset} failed to delete {pkg}')
+                print(f'Error: {e}')
+                exit(11)
+
+    print(f'{colors.fg.green}✅ Successfully deleted packages{colors.reset}')
+    print()
+
+    print(f'✨ {colors.bg.green}{colors.fg.black}Repo successfully updated{colors.reset} ✨')
 
 
 @cli.command('list-old-packages')
