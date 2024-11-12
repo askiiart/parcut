@@ -82,15 +82,8 @@ class Tests(unittest.TestCase):
     def test_package_list(self):
         create_test_data()
         result = repo_cleanup.HelperFunctions.get_package_list(repo_path)
-        expected = [
-            'test-r87.e176baf-1-x86_64.pkg.tar.zst',
-            'test-debug-r100.ab937ef-1-x86_64.pkg.tar.zst',
-            'test-r100.ab937ef-1-x86_64.pkg.tar.zst',
-            'example-program-10.2.1-2-x86_64.pkg.tar.zst',
-            'example-program-8.4.3-5-x86_64.pkg.tar.zst',
-            'test-debug-r87.e176baf-1-x86_64.pkg.tar.zst',
-            'example-program-debug-10.2.1-2-x86_64.pkg.tar.zst'
-        ]
+        expected = ['example-program-8.4.3-5-x86_64.pkg.tar.zst', 'example-program-10.2.1-2-x86_64.pkg.tar.zst', 'example-program-debug-10.2.1-2-x86_64.pkg.tar.zst', 'test-debug-r87.e176baf-1-x86_64.pkg.tar.zst', 'test-debug-r100.ab937ef-1-x86_64.pkg.tar.zst', 'test-r87.e176baf-1-x86_64.pkg.tar.zst', 'test-r100.ab937ef-1-x86_64.pkg.tar.zst']
+        self.assertEqual(result, expected)
 
 
 create_test_data()

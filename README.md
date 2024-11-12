@@ -6,7 +6,7 @@ A script to clean up pacman repos. This is primarily used for removing old versi
 
 ## Usage
 
-First off, this depends on `natsort`, which you can install with `pip install natsort`.
+First off, this depends on `natsort` and `click`, which you can install with `pip`.
 
 ```text
 list-new-packages
@@ -44,6 +44,8 @@ Arguments:
 
 - `--dry-run`: Do a dry run
 - `--only-delete`: Only delete files, don't modify the repo files from them (default: false)
+  - Without this argument, parcut will try to remove and add the relevant packages using `repo-add` and `repo-remove`, meaning it optionally depends on those programs.
+    - <small>These are needed to run the repo anyways, so you *should* have them installed already.</small>
 - `--delete-debug`: Delete debug symbol packages (default: true)
 
 ## Notes and credits
